@@ -1,5 +1,5 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import TelegramBot from 'node-telegram-bot-api';
+import * as TelegramBot from 'node-telegram-bot-api';
 
 @Injectable()
 export class BotService implements OnModuleInit {
@@ -8,15 +8,30 @@ export class BotService implements OnModuleInit {
   onModuleInit() {
     this.bot.on(
       'message',
-      this.onReceiveMessageHandler.bind(this) as (
+      this.onReceivedMessageHandler.bind(this) as (
         message: TelegramBot.Message,
         metadata: TelegramBot.Metadata,
       ) => void,
     );
   }
 
-  private onReceiveMessageHandler(
+  checkHasCorrectAccess(message: TelegramBot.Message) {
+    if (message.chat.type !== 'private') {
+      throw new Error('You have not correct access');
+    }
+  }
+
+  private async onReceivedMessageHandler(
     message: TelegramBot.Message,
     metadata: TelegramBot.Metadata,
-  ) {}
+  ) {
+    try {
+      this.checkHasCorrectAccess(message);
+    } catch {
+      await this.bot.sendMessage(
+        message.chat.id,
+        'You have not correct access 🚫🤚',
+      );
+    }
+  }
 }
