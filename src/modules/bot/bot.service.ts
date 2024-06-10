@@ -1,9 +1,12 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import * as TelegramBot from 'node-telegram-bot-api';
+import { JobManagerService } from '../job-manager/job-manager.service';
 
 @Injectable()
 export class BotService implements OnModuleInit {
   bot = new TelegramBot(process.env.TELEGRAM_API_TOKEN, { polling: true });
+
+  constructor(private readonly jobManagerService: JobManagerService) {}
 
   onModuleInit() {
     this.bot.on(
