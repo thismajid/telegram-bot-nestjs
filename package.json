@@ -23,11 +23,17 @@
     "release": "release-it"
   },
   "dependencies": {
+    "@nestjs/bull": "^10.1.1",
+    "@nestjs/cache-manager": "^2.2.2",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.2.2",
     "@nestjs/core": "^10.0.0",
     "@nestjs/platform-express": "^10.0.0",
+    "bull": "^4.12.9",
+    "cache-manager": "^5.6.1",
+    "ioredis": "^5.4.1",
     "node-telegram-bot-api": "^0.66.0",
+    "redis": "^4.6.14",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1"
   },
