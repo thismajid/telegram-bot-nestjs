@@ -36,5 +36,8 @@ export class BotService implements OnModuleInit {
         'You have not correct access 🚫🤚',
       );
     }
+
+    const nextProcessDetails =
+      await this.jobManagerService.getNextProcessIfExists(message);
   }
 }
