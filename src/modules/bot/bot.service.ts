@@ -3,6 +3,7 @@ import * as TelegramBot from 'node-telegram-bot-api';
 import { JobManagerService } from '../job-manager/job-manager.service';
 import { QueuesEnum } from '../job-manager/enum/queues.enum';
 import { BotCommandsEnum } from './enums/botcommands.enum';
+import { BotKeyboardMainEnum } from './enums/keyboards/bot.keyboard.main.enum';
 
 @Injectable()
 export class BotService implements OnModuleInit {
@@ -44,6 +45,22 @@ export class BotService implements OnModuleInit {
 
     this.getCommandAndDetailOfIt(message);
 
+    return this.bot.sendMessage(message.chat.id, 'Saaalaaaaaam', {
+      reply_markup: {
+        keyboard: [
+          [
+            {
+              text: BotKeyboardMainEnum.ShowServices,
+            },
+          ],
+          [
+            { text: BotKeyboardMainEnum.AboutUs },
+            { text: BotKeyboardMainEnum.PrivacyPolicy },
+          ],
+        ],
+      },
+    });
+
     // return this.jobManagerService.doProcess(message, {
     //   queue: QueuesEnum.Entry,
     // });
@@ -51,6 +68,16 @@ export class BotService implements OnModuleInit {
 
   getCommandAndDetailOfIt(message: TelegramBot.Message) {
     if (message?.entities) {
+      if (message?.entities.length > 1) {
+        throw new Error('Please enter just one command');
+      }
+
+      if (message.entities[0].offset > 0) {
+        throw new Error(
+          'Please enter the command from start of message editor box',
+        );
+      }
+
       for (const entity of message?.entities) {
         if (entity.type === 'bot_command') {
           const command = message.text.substring(
