@@ -1,6 +1,8 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import * as TelegramBot from 'node-telegram-bot-api';
 import { JobManagerService } from '../job-manager/job-manager.service';
+import { QueuesEnum } from '../job-manager/enum/queues.enum';
+import { BotCommandsEnum } from './enums/botcommands.enum';
 
 @Injectable()
 export class BotService implements OnModuleInit {
@@ -40,6 +42,32 @@ export class BotService implements OnModuleInit {
     const nextProcessDetails =
       await this.jobManagerService.getNextProcessIfExists(message);
 
-      
+    this.getCommandAndDetailOfIt(message);
+
+    // return this.jobManagerService.doProcess(message, {
+    //   queue: QueuesEnum.Entry,
+    // });
+  }
+
+  getCommandAndDetailOfIt(message: TelegramBot.Message) {
+    if (message?.entities) {
+      for (const entity of message?.entities) {
+        if (entity.type === 'bot_command') {
+          const command = message.text.substring(
+            entity.offset + 1,
+            entity.offset + entity.length,
+          );
+
+          switch (command) {
+            case BotCommandsEnum.Start: {
+              break;
+            }
+            default: {
+              throw new Error('Command not found');
+            }
+          }
+        }
+      }
+    }
   }
 }
