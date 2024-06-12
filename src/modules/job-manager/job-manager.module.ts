@@ -11,6 +11,9 @@ import { QueuesEnum } from './enum/queues.enum';
     BullModule.registerQueue({
       name: QueuesEnum.Entry,
     }),
+    BullModule.registerQueue({
+      name: QueuesEnum.Authentication,
+    }),
   ],
   providers: [JobManagerService],
   exports: [JobManagerService],
