@@ -35,10 +35,12 @@ export class BotService implements OnModuleInit {
     try {
       this.checkHasCorrectAccess(message);
     } catch {
-      await this.bot.sendMessage(
-        message.chat.id,
-        'You have not correct access 🚫🤚',
-      );
+      {
+        await this.bot.sendMessage(
+          message.chat.id,
+          'You have not correct access 🚫✋',
+        );
+      }
     }
 
     const nextProcessDetails =
@@ -94,19 +96,15 @@ export class BotService implements OnModuleInit {
         );
       }
 
-      for (const entity of message?.entities) {
+      for (const entity of message.entities) {
         if (entity.type === 'bot_command') {
-          const command = message.text.substring(
+          const command = message.text.slice(
             entity.offset + 1,
             entity.offset + entity.length,
           );
-
           switch (command) {
             case BotCommandsEnum.Start: {
-              break;
-            }
-            default: {
-              throw new Error('Command not found');
+              return { queue: QueuesEnum.Entry, data: {} };
             }
           }
         }
@@ -130,5 +128,22 @@ export class BotService implements OnModuleInit {
         break;
       }
     }
+  }
+
+  async sendMessage(
+    chatId: TelegramBot.ChatId,
+    text: string,
+    options?: TelegramBot.SendMessageOptions,
+  ): Promise<TelegramBot.Message> {
+    return await this.bot.sendMessage(
+      chatId,
+      text,
+      options || {
+        reply_markup: {
+          remove_keyboard: true,
+          keyboard: [],
+        },
+      },
+    );
   }
 }
