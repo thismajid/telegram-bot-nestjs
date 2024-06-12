@@ -5,6 +5,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CacheModule } from '@nestjs/cache-manager';
 import { configLoader } from './config';
 import { BullModule } from '@nestjs/bull';
+import { MongooseModule } from '@nestjs/mongoose';
+import { MongooseConfigService } from './config/mongoose.config.service';
 
 @Module({
   imports: [
@@ -23,6 +25,9 @@ import { BullModule } from '@nestjs/bull';
     }),
     BotModule,
     JobManagerModule,
+    MongooseModule.forRootAsync({
+      useClass: MongooseConfigService,
+    }),
   ],
 })
 export class AppModule {}
