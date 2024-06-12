@@ -7,6 +7,7 @@ import { Queue } from 'bull';
 
 import { QueuesEnum } from './enum/queues.enum';
 import { QueueProcessesEnum } from './enum/queue-processes.enum';
+import { IProcess } from './process.interface';
 
 @Injectable()
 export class JobManagerService {
@@ -16,11 +17,9 @@ export class JobManagerService {
   ) {}
 
   async getNextProcessIfExists(message: Message, canRemoveProcess = false) {
-    const result = await this.cacheManager.get<{
-      queue: QueuesEnum;
-      process?: QueueProcessesEnum;
-      data: Record<string, unknown>;
-    }>(`account-process-${message.from.id}`);
+    const result = await this.cacheManager.get<IProcess>(
+      `account-process-${message.from.id}`,
+    );
 
     if (canRemoveProcess) {
       await this.removeNextProcessIfExists(message);

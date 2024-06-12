@@ -4,6 +4,7 @@ import { JobManagerService } from '../job-manager/job-manager.service';
 import { QueuesEnum } from '../job-manager/enum/queues.enum';
 import { BotCommandsEnum } from './enums/botcommands.enum';
 import { BotKeyboardMainEnum } from './enums/keyboards/bot.keyboard.main.enum';
+import { IProcess } from '../job-manager/process.interface';
 
 @Injectable()
 export class BotService implements OnModuleInit {
@@ -43,30 +44,45 @@ export class BotService implements OnModuleInit {
     const nextProcessDetails =
       await this.jobManagerService.getNextProcessIfExists(message);
 
-    this.getCommandAndDetailOfIt(message);
+    const processForCommandOrButtonKeyboard =
+      this.getProcessForCommandOrKeyboardIfExists(message);
 
-    return this.bot.sendMessage(message.chat.id, 'Saaalaaaaaam', {
-      reply_markup: {
-        keyboard: [
-          [
-            {
-              text: BotKeyboardMainEnum.ShowServices,
-            },
-          ],
-          [
-            { text: BotKeyboardMainEnum.AboutUs },
-            { text: BotKeyboardMainEnum.PrivacyPolicy },
-          ],
-        ],
-      },
+    if (processForCommandOrButtonKeyboard) {
+      await this.jobManagerService.removeNextProcessIfExists(message);
+
+      return this.jobManagerService.doProcess(message, {
+        queue: processForCommandOrButtonKeyboard.queue,
+        process: processForCommandOrButtonKeyboard.process,
+      });
+    } else if (nextProcessDetails) {
+      return this.jobManagerService.doProcess(message, nextProcessDetails);
+    }
+
+    return this.jobManagerService.doProcess(message, {
+      queue: QueuesEnum.Entry,
     });
-
-    // return this.jobManagerService.doProcess(message, {
-    //   queue: QueuesEnum.Entry,
-    // });
   }
 
-  getCommandAndDetailOfIt(message: TelegramBot.Message) {
+  private getProcessForCommandOrKeyboardIfExists(
+    message: TelegramBot.Message,
+  ): IProcess {
+    const processOfCommand = this.getProccessOfCommand(message);
+
+    if (processOfCommand) {
+      return processOfCommand;
+    }
+
+    const processOfButtonKeyboard =
+      this.getProccessOfButtonKeyboardIfTextMessageIsButtonOfAllKeyboardsButtons(
+        message,
+      );
+
+    if (processOfButtonKeyboard) {
+      return processOfButtonKeyboard;
+    }
+  }
+
+  private getProccessOfCommand(message: TelegramBot.Message): IProcess | void {
     if (message?.entities) {
       if (message?.entities.length > 1) {
         throw new Error('Please enter just one command');
@@ -94,6 +110,24 @@ export class BotService implements OnModuleInit {
             }
           }
         }
+      }
+    }
+  }
+
+  private getProccessOfButtonKeyboardIfTextMessageIsButtonOfAllKeyboardsButtons(
+    message: TelegramBot.Message,
+  ): IProcess | void {
+    switch (message.text) {
+      case BotKeyboardMainEnum.AboutUs: {
+        break;
+      }
+
+      case BotKeyboardMainEnum.PrivacyPolicy: {
+        break;
+      }
+
+      case BotKeyboardMainEnum.ShowServices: {
+        break;
       }
     }
   }
