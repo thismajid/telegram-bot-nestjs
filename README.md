@@ -30,9 +30,17 @@ npm install
 ```bash
 NODE_ENV= # production | development | test
 APP_PORT= # desired app running port
+
 TELEGRAM_API_TOKEN= # bot auth token
+
 REDIS_HOSTNAME= # redis host name
 REDIS_PORT= # redis port
+
+MONGO_INITDB_USERNAME= # mongodb init username
+MONGO_INITDB_PASSWORD= # mongodb init password
+MONGO_HOSTNAME= # mongodb init host name
+MONGO_PORT= # mongodb port
+MONGO_INITDB_DATABASE= # mongodb init database
 ```
 
 Start the development server:
